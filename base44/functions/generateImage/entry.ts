@@ -9,10 +9,15 @@ export default async function(req) {
     const body = await req.json();
     const prompt = typeof body?.prompt === 'string' ? body.prompt.trim() : '';
     if (!prompt) return Response.json({ error: 'A prompt is required.' }, { status: 400 });
-    if (prompt.length > 2000) return Response.json({ error: 'Prompt is too long (max 2000 characters).' }, { status: 400 });
+    if (prompt.length > 4000) return Response.json({ error: 'Prompt is too long (max 4000 characters).' }, { status: 400 });
+
+    const referenceImages = Array.isArray(body?.reference_images)
+      ? body.reference_images.filter((s) => typeof s === 'string' && s.startsWith('http')).slice(0, 4)
+      : [];
 
     const result = await base44.asServiceRole.integrations.Core.GenerateImage({
-      prompt
+      prompt,
+      ...(referenceImages.length ? { existing_image_urls: referenceImages } : {})
     });
 
     const url = result?.url;
