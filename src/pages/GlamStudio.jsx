@@ -6,7 +6,6 @@ import StudioPanel, { ToolButton } from "@/components/studio/StudioPanel";
 import UploadCard from "@/components/studio/UploadCard";
 import Outputs from "@/components/studio/Outputs";
 import { DATA, QUICK, DEFAULTS, buildImagePrompt, buildVideoPrompt, buildVideoScript, buildDesignDirection, NEGATIVE } from "@/components/studio/studioData";
-import { generateImage } from "@/functions/generateImage";
 
 const VAL_KEYS = [
   ...Object.keys(DATA),
@@ -75,8 +74,6 @@ export default function GlamStudio() {
   const [uploads, setUploads] = useState({ brand: "", outfit: "", hair: "", accessory: "", product: "", scene: "" });
   const [heroVideo, setHeroVideo] = useState("");
   const [outputs, setOutputs] = useState({ imagePrompt: "", videoPrompt: "", videoScript: "", negativePrompt: "", designDirection: "" });
-  const [gallery, setGallery] = useState([]);
-  const [generating, setGenerating] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [history, setHistory] = useState([]);
 
@@ -179,27 +176,6 @@ export default function GlamStudio() {
       setVals((prev) => ({ ...prev, ...data }));
       toast({ title: "Campaign loaded" });
     } catch { toast({ title: "Could not load campaign" }); }
-  }
-
-  async function handleGenerateImage() {
-    const prompt = (outputs.imagePrompt || "").trim();
-    if (!prompt) { toast({ title: "Generate outputs first" }); return; }
-    setGenerating(true);
-    try {
-      const refImages = Object.values(uploads).filter((u) => u && !u.startsWith("blob:"));
-      const res = await generateImage({ prompt, reference_images: refImages });
-      const data = res?.data ?? res;
-      if (data?.url) {
-        setGallery((prev) => [{ url: data.url, id: Date.now() }, ...prev]);
-        toast({ title: "Image created" });
-      } else {
-        toast({ title: data?.error || "Failed to create image", variant: "destructive" });
-      }
-    } catch (err) {
-      toast({ title: err?.response?.data?.error || "Failed to create image", variant: "destructive" });
-    } finally {
-      setGenerating(false);
-    }
   }
 
   return (
@@ -423,9 +399,6 @@ export default function GlamStudio() {
               vals={vals}
               outputs={outputs}
               setOutputs={setOutputs}
-              onGenerateImage={handleGenerateImage}
-              generating={generating}
-              gallery={gallery}
             />
 
             {/* History */}

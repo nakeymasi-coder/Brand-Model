@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Download, Wand2, Copy } from "lucide-react";
-import { Image as ImageComponent } from "@/components/ui/image";
+import { Copy } from "lucide-react";
 import {
   buildImagePrompt, buildVideoPrompt, buildVideoScript, buildDesignDirection, NEGATIVE,
 } from "@/components/studio/studioData";
@@ -15,7 +14,7 @@ const TABS = [
   { id: "designDirection", label: "Flyer / Invitation Direction" },
 ];
 
-export default function Outputs({ vals, outputs, setOutputs, onGenerateImage, generating, gallery }) {
+export default function Outputs({ vals, outputs, setOutputs }) {
   const { toast } = useToast();
   const [tab, setTab] = useState("imagePrompt");
 
@@ -84,45 +83,6 @@ export default function Outputs({ vals, outputs, setOutputs, onGenerateImage, ge
           </div>
         ))}
 
-        <div className="mt-5 pt-5 border-t border-[#26303d]">
-          <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
-            <div>
-              <h5 className="text-sm font-bold text-white m-0">Create campaign image</h5>
-              <p className="text-[11px] text-[#9eabbc] m-0 mt-0.5">Generate a real image from your Image Prompt using the uploaded references.</p>
-            </div>
-            <button
-              onClick={onGenerateImage}
-              disabled={generating}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-white bg-gradient-to-br from-[#168fea] to-[#0c68b3] border border-[#2a9ef0] disabled:opacity-60"
-            >
-              {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
-              {generating ? "Creating…" : "Generate Image"}
-            </button>
-          </div>
-
-          {gallery.length === 0 ? (
-            <div className="rounded-[14px] border border-dashed border-[#26303d] p-8 text-center text-[#9eabbc] text-sm">
-              Generated campaign images will appear here.
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {gallery.map((item) => (
-                <div key={item.id} className="group relative rounded-xl overflow-hidden border border-[#26303d]">
-                  <ImageComponent src={item.url} alt="Campaign image" className="w-full aspect-square" fittingType="fit" />
-                  <a
-                    href={item.url}
-                    download
-                    target="_blank"
-                    rel="noreferrer"
-                    className="absolute top-2 right-2 p-2 rounded-lg bg-white/90 text-slate-900 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
-                  >
-                    <Download className="w-4 h-4" />
-                  </a>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
     </section>
   );
